@@ -1,0 +1,35 @@
+{
+  "name": "windsurf-project",
+  "version": "1.0.0",
+  "description": "A backend-first Digital Queue Management System designed for banks, hospitals, government institutions, and other service-oriented organizations that need to manage customer flow efficiently.",
+  "main": "index.js",
+  "scripts": {
+    "dev": "tsx watch src/server.ts",
+    "build": "tsc",
+    "start": "node dist/server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/NdanaDev/Queue-System.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/NdanaDev/Queue-System/issues"
+  },
+  "homepage": "https://github.com/NdanaDev/Queue-System#readme",
+  "dependencies": {
+    "@fastify/cors": "^11.3.0",
+    "@fastify/env": "^7.0.0",
+    "@prisma/client": "^6.19.3",
+    "fastify": "^5.10.0",
+    "prisma": "^6.19.3"
+  },
+  "devDependencies": {
+    "@types/node": "^26.1.1",
+    "tsx": "^4.23.1",
+    "typescript": "^7.0.2"
+  }
+}
