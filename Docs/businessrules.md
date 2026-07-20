@@ -1,7 +1,8 @@
 # Business Rules — Queue Management System
 
 ## 1. Validation Rules
-*Prevent invalid actions. Checked before an action is allowed to proceed.*
+
+_Prevent invalid actions. Checked before an action is allowed to proceed._
 
 - A customer may only have one active ticket per branch.
 - A completed ticket cannot be modified.
@@ -15,7 +16,8 @@
 - A manual override write is rejected without a reason string.
 
 ## 2. State Transition Rules
-*Define the legal lifecycle. Become the state machine.*
+
+_Define the legal lifecycle. Become the state machine._
 
 - A ticket cannot move directly from Waiting to Completed.
 - Only a teller can move a ticket from Called to In Service.
@@ -26,7 +28,8 @@
 - Closing a branch cascades its queues and counters to Closed.
 
 ## 3. Permission Rules
-*Answer "who is allowed to do this?" Become authorization.*
+
+_Answer "who is allowed to do this?" Become authorization._
 
 - Only a receptionist or supervisor may void a ticket.
 - Only a teller can start service.
@@ -36,7 +39,8 @@
 - Only the customer who holds a ticket (or staff acting on their behalf) may cancel it.
 
 ## 4. Automation Rules
-*Happen automatically. Become background jobs or domain events.*
+
+_Happen automatically. Become background jobs or domain events._
 
 - Queue numbers reset on a schedule (see Configuration).
 - Overflow activates automatically when queue length crosses a configured threshold.
@@ -47,7 +51,8 @@
 - A ticket's no-show timer automatically triggers the Called → No Show transition on expiry.
 
 ## 5. Audit Rules
-*Define accountability. Banks care enormously about these.*
+
+_Define accountability. Banks care enormously about these._
 
 - Every ticket state transition is audited.
 - Every manual override requires a reason.
@@ -55,7 +60,8 @@
 - Deleting an entity never removes its audit history.
 
 ## 6. Business Policy Rules
-*Not technical. Business decisions. Configurable — management could change these without touching architecture.*
+
+_Not technical. Business decisions. Configurable — management could change these without touching architecture._
 
 - Priority customers cannot skip more than a configured number of standard customers in a row.
 - No-show tickets may be recalled up to a configured maximum before voiding.
@@ -66,23 +72,25 @@
 ---
 
 ## Configuration
-*The settings behind the policy rules above, separated out so they can change per branch/deployment without code changes.*
 
-| Setting | Example default |
-|---|---|
-| Overflow threshold | 30 waiting tickets |
-| Maximum recall attempts before void | 2 |
-| Priority skip limit | 3 standard tickets |
-| No-show timer duration | 2–3 minutes |
-| Requeue offset | +5 positions |
-| Notification retry count | 1 |
-| Branch operating hours | per branch |
-| Queue number reset schedule | daily |
+_The settings behind the policy rules above, separated out so they can change per branch/deployment without code changes._
+
+| Setting                             | Example default    |
+| ----------------------------------- | ------------------ |
+| Overflow threshold                  | 30 waiting tickets |
+| Maximum recall attempts before void | 2                  |
+| Priority skip limit                 | 3 standard tickets |
+| No-show timer duration              | 2–3 minutes        |
+| Requeue offset                      | +5 positions       |
+| Notification retry count            | 1                  |
+| Branch operating hours              | per branch         |
+| Queue number reset schedule         | daily              |
 
 ---
 
 ## Invariants
-*Always true. The backend should never allow these to be violated — ideally enforced structurally (schema constraints, foreign keys) rather than only checked in application code.*
+
+_Always true. The backend should never allow these to be violated — ideally enforced structurally (schema constraints, foreign keys) rather than only checked in application code._
 
 - A ticket belongs to exactly one queue at any given moment.
 - A ticket belongs to exactly one service category.
@@ -93,4 +101,4 @@
 - An audit log entry, once written, never changes.
 - Every ticket has exactly one owning customer.
 
-**Validation rule vs. invariant:** a validation rule is checked *before* an action proceeds ("can this transition happen right now?"). An invariant is a structural guarantee that must hold *after* every operation, regardless of which code path got there — which is why invariants are often better enforced at the database/schema level (NOT NULL, foreign keys, unique constraints) than trusted to application-level `if` checks scattered across the service layer.
+**Validation rule vs. invariant:** a validation rule is checked _before_ an action proceeds ("can this transition happen right now?"). An invariant is a structural guarantee that must hold _after_ every operation, regardless of which code path got there — which is why invariants are often better enforced at the database/schema level (NOT NULL, foreign keys, unique constraints) than trusted to application-level `if` checks scattered across the service layer.

@@ -12,12 +12,12 @@ The goal of this project is not only to build a working queue management applica
 
 Many organizations still rely on manual or inefficient queue management processes that lead to:
 
-* Long and unpredictable waiting times.
-* Poor customer experience.
-* Lack of visibility into queue performance.
-* Difficulty prioritizing special cases (VIPs, elderly, emergency patients, etc.).
-* Limited reporting and auditing capabilities.
-* Inefficient staff utilization.
+- Long and unpredictable waiting times.
+- Poor customer experience.
+- Lack of visibility into queue performance.
+- Difficulty prioritizing special cases (VIPs, elderly, emergency patients, etc.).
+- Limited reporting and auditing capabilities.
+- Inefficient staff utilization.
 
 This project aims to solve these problems by providing a scalable, secure, and real-time queue management platform.
 
@@ -25,13 +25,13 @@ This project aims to solve these problems by providing a scalable, secure, and r
 
 # Project Goals
 
-* Digitize customer queue management.
-* Reduce customer waiting times.
-* Improve service efficiency.
-* Provide real-time queue updates.
-* Support multiple branches and service categories.
-* Enable data-driven decision making through analytics and reporting.
-* Demonstrate enterprise backend architecture and best practices.
+- Digitize customer queue management.
+- Reduce customer waiting times.
+- Improve service efficiency.
+- Provide real-time queue updates.
+- Support multiple branches and service categories.
+- Enable data-driven decision making through analytics and reporting.
+- Demonstrate enterprise backend architecture and best practices.
 
 ---
 
@@ -39,45 +39,45 @@ This project aims to solve these problems by providing a scalable, secure, and r
 
 ## Customer
 
-* Join a queue.
-* Receive a digital queue number.
-* View queue status.
-* Receive notifications when their turn approaches.
-* View estimated waiting time.
+- Join a queue.
+- Receive a digital queue number.
+- View queue status.
+- Receive notifications when their turn approaches.
+- View estimated waiting time.
 
 ## Reception / Front Desk
 
-* Create tickets on behalf of customers.
-* Assign customers to the correct service category.
-* Correct ticket information.
-* Prioritize customers when necessary.
-* Log all manual overrides.
+- Create tickets on behalf of customers.
+- Assign customers to the correct service category.
+- Correct ticket information.
+- Prioritize customers when necessary.
+- Log all manual overrides.
 
 ## Teller / Service Agent
 
-* Call the next customer.
-* Skip absent customers.
-* Recall customers.
-* Transfer customers to another service.
-* Complete service requests.
+- Call the next customer.
+- Skip absent customers.
+- Recall customers.
+- Transfer customers to another service.
+- Complete service requests.
 
 ## Supervisor
 
-* Open and close service counters.
-* Assign staff to counters.
-* Monitor queue performance.
-* View waiting time statistics.
-* Configure priority rules.
-* Manage queue overflow.
+- Open and close service counters.
+- Assign staff to counters.
+- Monitor queue performance.
+- View waiting time statistics.
+- Configure priority rules.
+- Manage queue overflow.
 
 ## System Administrator
 
-* Manage users and roles.
-* Configure branches.
-* Configure service categories.
-* Manage system settings.
-* Configure notifications.
-* Maintain system security.
+- Manage users and roles.
+- Configure branches.
+- Configure service categories.
+- Manage system settings.
+- Configure notifications.
+- Maintain system security.
 
 ---
 
@@ -85,30 +85,30 @@ This project aims to solve these problems by providing a scalable, secure, and r
 
 The system shall:
 
-* Allow customers to join queues.
-* Generate unique queue numbers.
-* Maintain queue order based on business rules.
-* Support priority queues.
-* Allow staff to call the next customer.
-* Support ticket transfers between services.
-* Track ticket status throughout its lifecycle.
-* Notify customers of queue updates.
-* Maintain audit logs.
-* Produce operational reports.
-* Support multiple branches.
-* Provide role-based access control.
+- Allow customers to join queues.
+- Generate unique queue numbers.
+- Maintain queue order based on business rules.
+- Support priority queues.
+- Allow staff to call the next customer.
+- Support ticket transfers between services.
+- Track ticket status throughout its lifecycle.
+- Notify customers of queue updates.
+- Maintain audit logs.
+- Produce operational reports.
+- Support multiple branches.
+- Provide role-based access control.
 
 ---
 
 # Non-Functional Requirements
 
-* Secure authentication and authorization.
-* Real-time updates across connected clients.
-* High availability during business hours.
-* Scalable architecture supporting multiple branches.
-* Reliable audit logging.
-* Low response times for queue operations.
-* Fault tolerance for temporary network interruptions.
+- Secure authentication and authorization.
+- Real-time updates across connected clients.
+- High availability during business hours.
+- Scalable architecture supporting multiple branches.
+- Reliable audit logging.
+- Low response times for queue operations.
+- Fault tolerance for temporary network interruptions.
 
 ---
 
@@ -173,29 +173,29 @@ Waiting (New Queue)
 
 # Core Domain Entities
 
-* Customer
-* Ticket
-* Queue
-* Branch
-* Counter
-* Service Category
-* User
-* Notification
-* Audit Log
-* Report
+- Customer
+- Ticket
+- Queue
+- Branch
+- Counter
+- Service Category
+- User
+- Notification
+- Audit Log
+- Report
 
 ---
 
 # Business Rules
 
-* A customer may only have one active ticket per service category.
-* Queue numbers must be unique within a branch for the day.
-* Priority customers may be served ahead of regular customers.
-* Every manual override must be recorded in the audit log.
-* A teller cannot serve multiple customers simultaneously.
-* Tickets automatically expire after a configurable no-show period.
-* Closed counters cannot receive new customers.
-* Queue operations must preserve data consistency under concurrent access.
+- A customer may only have one active ticket per service category.
+- Queue numbers must be unique within a branch for the day.
+- Priority customers may be served ahead of regular customers.
+- Every manual override must be recorded in the audit log.
+- A teller cannot serve multiple customers simultaneously.
+- Tickets automatically expire after a configurable no-show period.
+- Closed counters cannot receive new customers.
+- Queue operations must preserve data consistency under concurrent access.
 
 ---
 
@@ -203,19 +203,19 @@ Waiting (New Queue)
 
 This project is designed to explore and implement concepts such as:
 
-* RESTful API Design
-* Authentication & Authorization
-* Role-Based Access Control (RBAC)
-* Real-Time Communication (WebSockets)
-* Queue Management Algorithms
-* Scheduling
-* Notifications
-* Concurrency Control
-* Audit Logging
-* Event-Driven Thinking
-* Database Design
-* Clean Architecture
-* Scalable Backend Design
+- RESTful API Design
+- Authentication & Authorization
+- Role-Based Access Control (RBAC)
+- Real-Time Communication (WebSockets)
+- Queue Management Algorithms
+- Scheduling
+- Notifications
+- Concurrency Control
+- Audit Logging
+- Event-Driven Thinking
+- Database Design
+- Clean Architecture
+- Scalable Backend Design
 
 ---
 
@@ -225,12 +225,12 @@ This project is designed to explore and implement concepts such as:
 
 Example stack:
 
-* Java / Spring Boot *(or Node.js / Express)*
-* PostgreSQL
-* Redis
-* WebSockets
-* Docker
-* JWT Authentication
+- Java / Spring Boot _(or Node.js / Express)_
+- PostgreSQL
+- Redis
+- WebSockets
+- Docker
+- JWT Authentication
 
 ---
 

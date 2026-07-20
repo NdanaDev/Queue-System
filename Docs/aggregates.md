@@ -2,7 +2,7 @@
 
 Domain-Driven Design aggregates: which objects own consistency, and where the
 transactional boundaries actually sit. An aggregate is a cluster of objects
-that must stay consistent *together, atomically*. Anything outside that
+that must stay consistent _together, atomically_. Anything outside that
 boundary is referenced by ID only, and coordinated through domain events
 instead of a shared transaction.
 
@@ -13,6 +13,7 @@ instead of a shared transaction.
 **Root:** `Ticket`
 
 **Owns:**
+
 - Status
 - Status history / ticket events
 - No-show count
@@ -36,6 +37,7 @@ truth the moment a ticket ahead of it cancels.
 **Root:** `Queue`
 
 **Owns:**
+
 - Ordered list of ticket references (IDs + positions)
 - Queue status (open / overflow / closed)
 - Current length
@@ -57,6 +59,7 @@ block each other.
 **Root:** `Counter`
 
 **Owns:**
+
 - Status (open / serving / on break / closed)
 - Currently assigned agent (reference)
 - Currently serving ticket (reference)
@@ -71,6 +74,7 @@ this is its own aggregate rather than a field on Branch.
 **Root:** `Branch`
 
 **Owns:**
+
 - Operating hours
 - Currently active service categories
 - Overflow policy
@@ -89,6 +93,7 @@ as a coordinating context, not a consistency boundary, for those.
 **Root:** `Customer`
 
 **Owns:**
+
 - Identity
 - Priority flag
 
@@ -106,6 +111,7 @@ design for the rare race condition where two tickets briefly both exist.
 **Root:** `User`
 
 **Owns:**
+
 - Authentication
 - Roles / permissions
 - Currently assigned counter (reference)
@@ -121,6 +127,7 @@ logged out" that Counter reacts to.
 **Root:** `ServiceCategory`
 
 **Owns:**
+
 - Definition
 - Average duration
 - Priority weighting
@@ -135,7 +142,7 @@ queues reference it.
 Neither enforces a consistency boundary the way Ticket, Queue, or Counter do.
 
 - **Notification** has its own lifecycle (pending → sent → delivered/failed),
-  but nothing else needs to stay consistent *with* it. It's a reactive side
+  but nothing else needs to stay consistent _with_ it. It's a reactive side
   effect of ticket events, not something that co-owns state with anything.
 - **Audit Log** is append-only — a projection of everything that happened
   elsewhere, not a producer of invariants.
