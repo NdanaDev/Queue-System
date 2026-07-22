@@ -12,7 +12,7 @@ dist
 coverage
 
 # Prisma generated client
-/generated/prisma
+/src/generated/prisma
 .prisma
 
 # Logs
