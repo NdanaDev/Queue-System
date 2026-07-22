@@ -14,7 +14,214 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// ─────────────────────────────────────────────────────────
+// Enums — fixed, closed sets of values pulled straight out of
+// businessrules.md's state-transition and permission rules.
+// Making these enums (not String) means Postgres itself rejects
+// an invalid status; the state machine is partly enforced by
+// the schema, not just application code.
+// ─────────────────────────────────────────────────────────
+
+enum UserRole {
+  RECEPTIONIST
+  TELLER
+  SUPERVISOR
+  ADMINISTRATOR
+}
+
+enum QueueStatus {
+  OPEN
+  OVERFLOW
+  CLOSED
+}
+
+enum CounterStatus {
+  OPEN
+  SERVING
+  ON_BREAK
+  CLOSED
+}
+
+enum TicketStatus {
+  WAITING
+  CALLED
+  IN_SERVICE
+  COMPLETED
+  NO_SHOW
+  TRANSFERRED
+  VOIDED
+}
+
+enum NotificationStatus {
+  PENDING
+  SENT
+  DELIVERED
+  FAILED
+}
+
+// ─────────────────────────────────────────────────────────
+// 1. ServiceCategory — zero foreign keys, built first.
+// ─────────────────────────────────────────────────────────
+
+model ServiceCategory {
+  id                 String  @id @default(uuid())
+  name               String
+  avgDurationMinutes Int
+  isActive           Boolean @default(true)
+
+  branches BranchServiceCategory[]
+  queues   Queue[]
+  tickets  Ticket[]
+}
+
+// ─────────────────────────────────────────────────────────
+// 2. User — staff accounts. Zero foreign keys.
+// ─────────────────────────────────────────────────────────
+
+model User {
+  id   String   @id @default(uuid())
+  name String
+  role UserRole
+
+  countersManned Counter[]  @relation("CounterCurrentStaff")
+  auditLogs      AuditLog[]
+}
+
+// ─────────────────────────────────────────────────────────
+// 3. Customer — zero foreign keys.
+// ─────────────────────────────────────────────────────────
+
+model Customer {
+  id           String  @id @default(uuid())
+  identifier   String
+  priorityFlag Boolean @default(false)
+
+  tickets Ticket[]
+}
+
+// ─────────────────────────────────────────────────────────
+// 4. Branch — zero foreign keys of its own; queues and
+// categories are referenced, not owned (see aggregates.md).
+// ─────────────────────────────────────────────────────────
+
 model Branch {
   id   String @id @default(uuid())
   name String
+
+  queues            Queue[]
+  serviceCategories BranchServiceCategory[]
+  counters          Counter[]
+}
+
+// ─────────────────────────────────────────────────────────
+// 5. BranchServiceCategory — join table. Depends on Branch
+// and ServiceCategory, so it has to come after both.
+// ─────────────────────────────────────────────────────────
+
+model BranchServiceCategory {
+  branchId          String
+  serviceCategoryId String
+  isActive          Boolean @default(true)
+
+  branch          Branch          @relation(fields: [branchId], references: [id])
+  serviceCategory ServiceCategory @relation(fields: [serviceCategoryId], references: [id])
+
+  @@id([branchId, serviceCategoryId])
+}
+
+// ─────────────────────────────────────────────────────────
+// 6. Queue — depends on Branch + ServiceCategory.
+// ─────────────────────────────────────────────────────────
+
+model Queue {
+  id                String      @id @default(uuid())
+  branchId          String
+  serviceCategoryId String
+  status            QueueStatus @default(OPEN)
+
+  branch          Branch          @relation(fields: [branchId], references: [id])
+  serviceCategory ServiceCategory @relation(fields: [serviceCategoryId], references: [id])
+  tickets         Ticket[]
+}
+
+// ─────────────────────────────────────────────────────────
+// 7. Counter — depends on Branch + User, and (circularly)
+// on Ticket. See the reasoning below for how that's resolved.
+// ─────────────────────────────────────────────────────────
+
+model Counter {
+  id              String        @id @default(uuid())
+  branchId        String
+  status          CounterStatus @default(CLOSED)
+  currentUserId   String?       @unique
+  currentTicketId String?       @unique
+
+  branch        Branch   @relation(fields: [branchId], references: [id])
+  currentUser   User?    @relation("CounterCurrentStaff", fields: [currentUserId], references: [id])
+  currentTicket Ticket?  @relation("CounterCurrentTicket", fields: [currentTicketId], references: [id])
+  ticketHistory Ticket[] @relation("TicketCounterHistory")
+}
+
+// ─────────────────────────────────────────────────────────
+// 8. Ticket — the center of gravity. Depends on Queue,
+// Customer, ServiceCategory, and Counter — everything else
+// had to exist first.
+// ─────────────────────────────────────────────────────────
+
+model Ticket {
+  id                String       @id @default(uuid())
+  queueId           String
+  customerId        String
+  serviceCategoryId String
+  counterId         String?
+  status            TicketStatus @default(WAITING)
+  noShowCount       Int          @default(0)
+  priorityFlag      Boolean      @default(false)
+  createdAt         DateTime     @default(now())
+  completedAt       DateTime?
+
+  queue            Queue           @relation(fields: [queueId], references: [id])
+  customer         Customer        @relation(fields: [customerId], references: [id])
+  serviceCategory  ServiceCategory @relation(fields: [serviceCategoryId], references: [id])
+  counter          Counter?        @relation("TicketCounterHistory", fields: [counterId], references: [id])
+  currentAtCounter Counter?        @relation("CounterCurrentTicket")
+
+  notifications Notification[]
+
+  // Supports "ORDER BY priorityFlag DESC, createdAt ASC WHERE queueId = ?"
+  // — the read-time position computation from schema.md decision #2.
+  @@index([queueId, priorityFlag, createdAt])
+}
+
+// ─────────────────────────────────────────────────────────
+// 9. Notification — depends on Ticket.
+// ─────────────────────────────────────────────────────────
+
+model Notification {
+  id       String              @id @default(uuid())
+  ticketId String
+  channel  String
+  status   NotificationStatus  @default(PENDING)
+  sentAt   DateTime?
+
+  ticket Ticket @relation(fields: [ticketId], references: [id])
+}
+
+// ─────────────────────────────────────────────────────────
+// 10. AuditLog — depends on User (the actor). entityId is
+// deliberately NOT a foreign key — see reasoning below.
+// ─────────────────────────────────────────────────────────
+
+model AuditLog {
+  id         String   @id @default(uuid())
+  entityType String
+  entityId   String
+  action     String
+  reason     String?
+  createdAt  DateTime @default(now())
+  actorId    String?
+
+  actor User? @relation(fields: [actorId], references: [id])
+
+  @@index([entityType, entityId])
 }
