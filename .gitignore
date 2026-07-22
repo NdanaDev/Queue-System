@@ -8,13 +8,17 @@ node_modules
 # Build output
 dist
 
+# Test coverage
+coverage
+
 # Prisma generated client
 /generated/prisma
+.prisma
 
 # Logs
 npm-debug.log*
 *.log
 
 # Editor/OS
-.vscode
+.vscode/settings.json
 .DS_Store
