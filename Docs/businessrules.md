@@ -4,7 +4,7 @@
 
 _Prevent invalid actions. Checked before an action is allowed to proceed._
 
-- A customer may only have one active ticket per branch.
+- A customer may only have one active ticket at a time, across the whole system (not just per branch) — see schema.md decision #6.
 - A completed ticket cannot be modified.
 - A voided ticket cannot be restored.
 - A counter serves one ticket at a time.
